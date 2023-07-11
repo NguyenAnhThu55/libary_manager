@@ -5,19 +5,20 @@
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "require": {
-        "php": "^8.0",
-        "ext-gd": "*",
-        "ext-zip": "*",
+        "php": "^8.2.0",
         "barryvdh/laravel-dompdf": "^2.0",
+        "botman/botman": "^2.7",
+        "botman/driver-web": "^1.5",
         "bumbummen99/shoppingcart": "^4.2",
         "guzzlehttp/guzzle": "^7.2",
-        "illuminate/support": "^9.45",
+        "illuminate/support": "^9.47",
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
-        "maatwebsite/excel": "^3.0",
+        "munafio/chatify": "^1.5",
         "nesbot/carbon": "^2.63",
-        "picqer/php-barcode-generator": "^2.2"
+        "picqer/php-barcode-generator": "^2.2",
+        "pusher/pusher-php-server": "^7.2"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

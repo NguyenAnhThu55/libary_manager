@@ -35,7 +35,7 @@
                 </div>
             </div>
         </div>
-
+       
         <div class="row">
             <div class="col-sm-10">
                 <div class="table-agile-info">
@@ -92,6 +92,8 @@
                                                         <option id="{{$status->borrow_books_id}}" value="1" selected>Đang Mượn</option>
                                                         <option id="{{$status->borrow_books_id}}" value="2">Gia Hạn</option>
                                                         <option id="{{$status->borrow_books_id}}" value="3">Đã Trả</option>
+                                                        <option id="{{$status->borrow_books_id}}" value="4">Quá Hạn</option>
+                                                        <option id="{{$status->borrow_books_id}}" value="5">Mất Sách</option>
                                                     </select>
                                                 </form>
                                                 @elseif ($status->borrow_books_status==2)
@@ -101,6 +103,8 @@
                                                         <option id="{{$status->borrow_books_id}}" value="">--chọn--</option>
                                                         <option id="{{$status->borrow_books_id}}" value="2" selected >Gia Hạn</option>
                                                         <option id="{{$status->borrow_books_id}}" value="3">Đã Trả</option>
+                                                        <option id="{{$status->borrow_books_id}}" value="4">Quá Hạn</option>
+                                                        <option id="{{$status->borrow_books_id}}" value="5">Mất Sách</option>
                                                     </select>
                                                 </form>
                                                 @elseif ($status->borrow_books_status==3)
@@ -111,6 +115,25 @@
                                                         <option id="{{$status->borrow_books_id}}" value="3"selected>Đã Trả</option>
                                                     </select>
                                                 </form>
+                                                @elseif ($status->borrow_books_status==4)
+                                                <form action="">
+                                                    @csrf
+                                                    <select name="borrow_detail_status" class="form-select borrow_detail_status" id="">
+                                                        <option id="{{$status->borrow_books_id}}" value="">--chọn--</option>
+                                                        <option id="{{$status->borrow_books_id}}" value="2">Gia Hạn</option>
+                                                        <option id="{{$status->borrow_books_id}}" value="3">Đã Trả</option>
+                                                        <option id="{{$status->borrow_books_id}}" selected value="4">Quá Hạn</option>
+                                                        <option id="{{$status->borrow_books_id}}" value="5">Mất Sách</option>
+                                                    </select>
+                                                </form>
+                                                @elseif ($status->borrow_books_status==5)
+                                                <form action="">
+                                                    @csrf
+                                                    <select name="borrow_detail_status" class="form-select borrow_detail_status" id="">
+                                                        <option id="{{$status->borrow_books_id}}" value="">--chọn--</option>
+                                                        <option id="{{$status->borrow_books_id}}" selected value="5">Mất Sách</option>
+                                                    </select>
+                                                </form>
                                                 @else
                                                 <form action="">
                                                     @csrf
@@ -119,6 +142,8 @@
                                                         <option id="{{$status->borrow_books_id}}" value="1">Đang Mượn</option>
                                                         <option id="{{$status->borrow_books_id}}" value="2">Gia Hạn</option>
                                                         <option id="{{$status->borrow_books_id}}" value="3">Đã Trả</option>
+                                                        <option id="{{$status->borrow_books_id}}" value="4">Quá Hạn</option>
+                                                        <option id="{{$status->borrow_books_id}}" value="5">Mất Sách</option>
                                                     </select>
                                                 </form>
                                                 @endif
@@ -132,12 +157,52 @@
                               
                             </tbody>
                         </table>
-                    
+                        {{-- trường hợp nếu làm mát sách sẽ phạt tiền --}}
+                        @if ($status->borrow_books_status==5)
+                            <div class="container-lost-book" id="show_lost_book">
+                                <div class="lost-book">
+                                    <h2>Thông Tin Mất Sách</h2>
+                                    <p class="text-danger">Vì lý do bạn làm mất sách nên chúc tôi cần phải phạt tiền bạn!</p>
+                                    <table id="datatable-buttons" class="table table-striped dt-responsive nowrap w-100">
+                                        <thead>
+                                            <tr>
+                                                <th>STT</th>
+                                                <th>Tên Sách</th>
+                                                <th>Giá</th>
+                                                <th>Ngày mượn</th>
+                                            </tr>
+                                        </thead>
+                                    
+                                    
+                                        @php
+                                            $i=0;
+                                        @endphp
+                                        <tbody>
+                                            @foreach ($borrow_detail as $key=>$lost_detail)
+                                            @php
+                                                $i++;
+                                            @endphp
+                                            <tr>
+                                                <td>{{$i}}</td>
+                                                <td>{{$lost_detail->book_name}}</td>
+                                                <td><b>{{number_format($lost_detail->books_price).'đ'}}</b></td>
+                                                <td>{{$lost_detail->created_at}}</td>
+                                            </tr>
+                                        @endforeach
+                                        </tbody>
+                                    </table>
+
+                                    <a href="{{URL::to('/print-receipt/'.$lost_detail->borrow_books_id)}}"><button class="btn btn-primary ml-3 mb-2 mt-3">Thu Tiền</button></a>
+                                </div>
+                            </div>
+                            
+                        @endif
                     </div>
                 </div>
             </div>
             
         </div>
+        <div><a href="http://localhost/library-manager/manage-borrow">trở lại</a></div>
 
     </div>
 

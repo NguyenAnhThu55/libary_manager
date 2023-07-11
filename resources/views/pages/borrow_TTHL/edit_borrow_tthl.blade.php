@@ -20,14 +20,33 @@
                         <div class="form-group">
                             <label class="d-flex">Email SV</label>
                             <input type="email" class="form-control" name="email_sv" value="{{$val->email_sv}}">
+                            
                         </div>
                         <div class="form-group">
-                            <label class="d-flex">Tên sách</label>
+                            <label class="d-flex">Tên sách (1)</label>
                             <input type="text" class="form-control" name="book_name" value="{{$val->book_name}}">
                         </div>
                         <div class="form-group">
                             <label class="d-flex">Tên Tác Giả (nếu có)</label>
                             <input type="text" class="form-control" name="authors_name"value="{{$val->authors_name}}">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="d-flex">Tên sách (2)</label>
+                            <input type="text" class="form-control" name="book_name2" value="{{$val->book_name2}}">
+                        </div>
+                        <div class="form-group">
+                            <label class="d-flex">Tên Tác Giả (nếu có)</label>
+                            <input type="text" class="form-control" name="authors_name2"value="{{$val->authors_name2}}">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="d-flex">Tên sách (3)</label>
+                            <input type="text" class="form-control" name="book_name3" value="{{$val->book_name3}}">
+                        </div>
+                        <div class="form-group">
+                            <label class="d-flex">Tên Tác Giả (nếu có)</label>
+                            <input type="text" class="form-control" name="authors_name3"value="{{$val->authors_name3}}">
                         </div>
 
                         <div class="form-group">

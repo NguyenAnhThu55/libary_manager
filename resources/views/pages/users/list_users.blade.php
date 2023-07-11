@@ -9,7 +9,7 @@
                 <div class="page-title-box">
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item ml-2"><a href="javascript: void(0);">Hyper</a></li>
+                            <li class="breadcrumb-item ml-2"><a href="javascript: void(0);">Thư viện</a></li>
                             <li class="breadcrumb-item mr-4 active">Quản Lý Đọc Giả</li>
                         </ol>
                     </div>

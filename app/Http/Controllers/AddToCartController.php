@@ -43,20 +43,38 @@ class AddToCartController extends Controller
                     $output.='<div class="row">
                         <div class="col-sm-12">';
                             foreach($content as $val){
-                            $output.='
-                            <div class="row mt-2">
-                                <div class="col-sm-2">
-                                    <img src="'.URL('/public/image/'.$val->options->image).'" alt="" srcset="" width="40px" style="height:40px">
-                                </div>
-                                <div class="col-sm-8">
-                                    <p class="d-flex">'.$val->name.'</p>
-                                </div>
-                                
-                                <div class="col-sm-2">  
-                                    <a onclick="return confirm("Bạn có chắc chắn muốn xóa danh mục này không?")" 
-                                    href="'.URL('/delete-cart-book/'.$val->rowId).'" class="action-icon"> <i class="mdi mdi-delete"></i></a>
-                                </div>
-                            </div>';
+                                if($val->options->image==null){
+                                    $output.='
+                                    <div class="row mt-2">
+                                        <div class="col-sm-2">
+                                            <img src="'.URL('/public/image/nothumb.jpg').'" alt="" srcset="" width="40px" style="height:45px">
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <p class="d-flex">'.$val->name.'</p>
+                                        </div>
+                                        
+                                        <div class="col-sm-2">  
+                                            <a onclick="return confirm("Bạn có chắc chắn muốn xóa danh mục này không?")" 
+                                            href="'.URL('/delete-cart-book/'.$val->rowId).'" class="action-icon"> <i class="mdi mdi-delete"></i></a>
+                                        </div>
+                                    </div>';
+                                }else{
+                                    $output.='
+                                    <div class="row mt-2">
+                                        <div class="col-sm-2">
+                                            <img src="'.URL('/public/image/'.$val->options->image).'" alt="" srcset="" width="40px" style="height:40px">
+                                        </div>
+                                        <div class="col-sm-8">
+                                            <p class="d-flex">'.$val->name.'</p>
+                                        </div>
+                                        
+                                        <div class="col-sm-2">  
+                                            <a onclick="return confirm("Bạn có chắc chắn muốn xóa danh mục này không?")" 
+                                            href="'.URL('/delete-cart-book/'.$val->rowId).'" class="action-icon"> <i class="mdi mdi-delete"></i></a>
+                                        </div>
+                                    </div>';
+                                }
+                           
                             }
                             $output.='
                         
@@ -121,6 +139,14 @@ class AddToCartController extends Controller
     public function delete_cart_book($books_id){
         Cart::update($books_id,0);
         Session::put('message','Xóa thành công');
+        return Redirect::to('/show-cart-book');
+    }
+
+    public function update_quantity_borrow_books(Request $request){
+        $rowId_cart = $request->rowId_cart;
+        $quantity_borrow = $request->update_quantity_borrow;
+
+        Cart::update($rowId_cart,$quantity_borrow);
         return Redirect::to('/show-cart-book');
     }
 }

@@ -9,7 +9,7 @@
                 <div class="page-title-box">
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item ml-2"><a href="javascript: void(0);">Hyper</a></li>
+                            <li class="breadcrumb-item ml-2"><a href="javascript: void(0);">Thư viện</a></li>
                             <li class="breadcrumb-item ">Quản Lý Sách</li>
                             <li class="breadcrumb-item ">Thống Kê</li>
                             <li class="breadcrumb-item mr-4 active">Tìm Kiếm</li>
@@ -175,9 +175,16 @@
                                                         {{$list_book->books_name}}
                                                     </td>
 
+                                                    @if ($list_book->books_image == null)
+                                                    <td>
+                                                        <img src="{{('public/image/nothumb.jpg')}}" altwidth="40" height="40">
+                                                    </td>
+                                                    @else
                                                     <td>
                                                         <img src="{{('public/image/'.$list_book->books_image)}}" altwidth="40" height="40">
                                                     </td>
+                                                    @endif
+
 
                                                     <td>
                                                        
@@ -272,6 +279,7 @@
 
                                 </tbody>
                             </table>
+                            <a href="http://localhost/library-manager/thong-ke-sach">Quản lý Sách</a>
                         </div>
                     </div> <!-- end card-body-->
                 </div> <!-- end card-->

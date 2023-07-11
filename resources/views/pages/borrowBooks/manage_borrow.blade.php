@@ -3,13 +3,15 @@
                         
       <div class="container">
             <div class="row m-1">
-                  <div class="col-8"><h2 class="mt-3 mb-2">Thông Tin Mượn Sách</h2></div>
+                  <div class="col-8"><h2 class="mt-3 mb-2">Thống Kê Danh Sách</h2></div>
                   <div class="col-3 mt-3 app-search dropdown d-none d-lg-block">
                     </div>
             </div>
             <div class="row">
                   
-                  <div class="col-sm-1"></div>
+                  <div class="col-sm-1">
+                        
+                  </div>
                   <div class="col-sm-10">
                         <?php
                         $message = Session::get('message');
@@ -18,7 +20,21 @@
                             session::put('message', null);
                         }
                         ?>
-                        <div class="table-responsive">
+                        <div class="" id="manage_borrow">
+                              <select name="" id="list_manage_borrow" class="form-select mb-2">
+                                    <option value="">--- Tìm theo danh sách ---</option>
+                                    <option value="1">Danh sách mượn</option>
+                                    <option value="2">Danh sách gia hạn</option>
+                                    <option value="3">Danh sách Trả</option>
+                                    <option value="4">Danh sách Quá Hạn</option>
+                                    <option value="5">Danh sách mất sách</option>
+                              </select>
+                        </div>
+                        <div class="table-responsive" id="list_search_borrow">
+                             
+                        </div>
+
+                        <div class="table-responsive" id="list_id_borrow">
                               <table id="basic-datatable" class="table table-striped dt-responsive nowrap w-100" data-page-length="5">
                                   <thead class="table-light-borrow">
                                       <tr>
@@ -65,8 +81,12 @@
                                                                   <td><span class="badge bg-danger">Đang Mượn</span></td>
                                                             @elseif ($list_borrow->borrow_books_status==2)
                                                                   <td><span class="badge badge-warning-lighten">Đã Gia Hạn</span></td>
-                                                            @else
+                                                            @elseif ($list_borrow->borrow_books_status==3)
                                                                   <td><span class="badge badge-success-lighten">Đã Trả</span></td>
+                                                                  @elseif ($list_borrow->borrow_books_status==4)
+                                                                  <td><span class="badge badge-info-lighten">Quá Hạn</span></td>
+                                                                  @elseif ($list_borrow->borrow_books_status==5)
+                                                                  <td><span class="badge badge-danger-lighten">Mất Sách</span></td>
                                                       @endif
                                                      
                                                 

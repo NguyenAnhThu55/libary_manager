@@ -100,8 +100,8 @@ return [
     */
 
     'from' => [
-        'address' => 'thub1910584@student.ctu.edu.vn',
-        'name' =>'Library Manager',
+        'address' => env('MAIL_FROM_ADDRESS', 'thub1910584@student.ctu.edu.vn'),
+        'name' => env('MAIL_FROM_NAME', 'Anh Thu'),
     ],
 
     /*

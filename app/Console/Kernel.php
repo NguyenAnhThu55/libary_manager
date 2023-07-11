@@ -4,7 +4,9 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-
+use App\Models\BorrowBooks as BorrowBooks;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 class Kernel extends ConsoleKernel
 {
     /**
@@ -15,7 +17,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        //kiểm tra hạn 
+       $schedule->command('post:cron')->at('6:58');
+        // kiểm tra mỗi ngày vào lúc 7h sáng
+        $schedule->command('email:send')->at('7:00');
     }
 
     /**

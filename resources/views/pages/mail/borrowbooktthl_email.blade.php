@@ -27,7 +27,7 @@
                     <h6 style="margin-left: 50px;">Chào bạn</strong></h5>
                     <div style="margin-left: 50px;font-size: 16px;color:#000;">
                         Cảm ơn bạn đã quan tâm và sử dụng dịch vụ mượn sách của khoa Email này gửi bạn để 
-                        <strong style="background-color: gold; font-size: 16px;">Thông báo với bạn đã đã có sách</strong>
+                        <strong style="background-color: gold; font-size: 16px;">Thông báo với bạn đã có sách</strong>
                     </div>
                     <div style="margin-left: 50px;font-size: 16px;color:#000;">
                         Bạn vui lòng đến thư viện khoa Phát Triển Nông Thôn để nhận sách

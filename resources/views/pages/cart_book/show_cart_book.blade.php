@@ -9,22 +9,12 @@
                 <div class="page-title-box">
                     {{-- <div class="page-title-right">
                         <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a href="javascript: void(0);">Hyper</a></li>
+                            <li class="breadcrumb-item"><a href="javascript: void(0);">Thư viện</a></li>
                             <li class="breadcrumb-item active">Quản Lý Đơn Vị</li>
                         </ol>
                     </div> --}}
                     <h2 class="page-title" >Danh Sách Mượn</h2>
                 </div>
-            </div>
-           
-            <div class="col-3 mt-3 app-search dropdown d-none d-lg-block">
-                <form>
-                    <div class="input-group">
-                        <input type="text" class="form-control dropdown-toggle" placeholder="Search..." id="top-search">
-                        <span class="mdi mdi-magnify search-icon"></span>
-                        <button class="input-group-text btn-primary" type="submit">Tìm Kiếm</button>
-                    </div>
-                </form>  
             </div>
             <?php
             $message = Session::get('message');
@@ -47,14 +37,16 @@
                                 $count = Cart::count();
                                 
                                 @endphp
+
+                                <a href="http://localhost/library-manager/thong-ke-sach">Chọn Sách</a>
                                 <table class="table table-centered table-borderless table-hover w-100 dt-responsive nowrap" id="products-datatable">
                                     <thead class="table-light">
                                         <tr>                    
                                             <th>#</th>
                                             <th>Hình Ảnh</th>
                                             <th>Tên Sách</th>
-                                            <th>Số lượng mượn</th>
-                                            <th style="width: 155px;">Tùy Chọn</th>
+                                            <th style="width: 155px;">Số lượng mượn</th>
+                                            <th >Tùy Chọn</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -82,16 +74,36 @@
                                                    </td>
                                                    
                                                    <td>
-                                                       <img src="{{URL::to('/public/image/'.$cart->options->image)}}" altwidth="80" height="80">
+                                                        @if ($cart->options->image==null)
+                                                        <img src="{{URL::to('/public/image/nothumb.jpg')}}" altwidth="80" height="80">
+                                                        @else
+                                                        <img src="{{URL::to('/public/image/'.$cart->options->image)}}" altwidth="80" height="80">
+                                                        @endif
                                                    </td>
                                                    <td>
                                                        {{ $cart->name}}
                                                    </td>
-                                                   <td>
-                                                       {{$cart->qty}}
+                                                   <td style="text-align: center">
+                                                        <style>
+                                                            .cart_quantity_input{
+                                                                border: none;
+                                                                width: 35px;
+                                                            }
+                                                            .update_qty_btn{
+                                                                border: none;
+                                                                border-radius: 4px;
+                                                                width: 30px; 
+                                                            }
+                                                        </style>
+                                                        <form action="{{URL::to('/update-quantity-borrow-books')}}" method="POST">
+                                                            @csrf
+                                                            <input type="hidden" value="{{$cart->rowId}}" name="rowId_cart" id="rowId_cart">
+                                                            <input type="number" min="1" max="10" id="update_quantity_borrow" name="update_quantity_borrow" class="cart_quantity_input" value="{{$cart->qty}}"> 
+                                                            <input type="submit" value="✔" name="update_qty_btn" class="update_qty_btn">
+                                                        </form>
                                                    </td>
                                                    <td>
-                                                       <a onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?')" href="{{URL::to('/delete-cart-book/'.$cart->rowId)}}" class="action-icon"> <i class="mdi mdi-delete"></i></a>
+                                                       <a onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?')" href="{{URL::to('/delete-cart-book/'.$cart->rowId)}}" class="action-icon"> <i class="mdi mdi-delete text-danger"></i></a>
                                                    </td>
                                                                            
                                                @endif
@@ -114,11 +126,20 @@
                             <div class="page-title">
                                 <form  action="{{URL::to('/save-borrowing')}}" method="POST">
                                     @csrf
+                                    <h6 value="">Chọn Hình Thức Mượn</h6>
+                                    <div class="input-group mb-2 mt-2">
+                                        <select name="choose-loan" class="form-select borrow_detail_status" id="choose-loan">
+                                            <option value="1">Đọc Ngay</option>
+                                            <option value="2">Mượn về</option>
+                                        </select>
+                                    </div>
+
                                     <h6>Nhập mã số CB/SV</h6>
                                     <div class="input-group">
                                         <input id="check_user_code" required name="check_user_code" type="text" class="form-control form-control-light" >
                                         
                                     </div>
+                                   
                                     <div class="mt-2" id="show_name_user">     
                                     </div>
                                 </form>

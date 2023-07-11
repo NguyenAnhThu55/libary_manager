@@ -13,6 +13,7 @@ use App\Models\User;
 use Gloudemans\Shoppingcart\Facades\Cart;
 use Illuminate\Support\Facades\Redirect;
 use PhpParser\Node\Stmt\Return_;
+use Illuminate\Support\Facades\Mail;
 
 class CheckUserController extends Controller
 {
@@ -33,6 +34,8 @@ class CheckUserController extends Controller
         $data['user_code'] = $request->user_code;
         $data['user_phone'] = $request->user_phone;
         $data['user_email'] = $request->user_email;
+        $password = "123456";
+        $data['user_password'] = md5($password);
 
         $user_id = User::insertGetId($data);
 
@@ -51,6 +54,7 @@ class CheckUserController extends Controller
     public function check_user(Request $request){
             $this->AuthLogin();
             $data_input = $request->user_code;
+            $value_choose = $request->choose_loan;
             $get_user=User::where('user_code',$data_input)->get();
 
             $cart = 0;
@@ -58,7 +62,7 @@ class CheckUserController extends Controller
             // $cart++; //
              $count=Cart::count($cart);
             $output = '';
-            if(count($get_user)>0){
+            if(count($get_user)>0 && $value_choose==2){
                 foreach( $get_user as $user ){
 
                      $output = '<div class="border border-dark p-2">
@@ -156,7 +160,75 @@ class CheckUserController extends Controller
                     }
 
                 }
-            }else{
+            }
+            // so với mượn đọc trực tiếp tại thư viện thì mỗi người chị được mượn không quá 2 cuốn
+            elseif(count($get_user)>0 && $value_choose==1){
+                foreach( $get_user as $user ){
+
+                    $output = '<div class="border border-dark p-2">
+                           <p class="text-capitalize" style="font-size: 16px;
+                           line-height: 25px;">
+                                 <span>Tên CB / SV:</span>
+                                 <span><b>'.$user->user_name.'</b></span>
+                           </p>
+       
+                           <p class="text-capitalize" style="font-size: 16px;
+                           line-height: 25px;">
+                                 <span>MSCB / MSSV:</span>
+                                 <span><b>'.$user->user_code.'</b></span>
+                           </p>
+       
+                           <p class="text-capitalize" style="font-size: 16px;
+                           line-height: 25px;">
+                                 <span>SĐT :</span>
+                                 <span><b>'.$user->user_phone.'</b></span>
+                           </p>
+
+                           <p class="text-capitalize" style="font-size: 16px;
+                               line-height: 25px;">
+                                 <span>Email:</span>
+                                 <span class="text-lowercase"><b>'.$user->user_email.'</b></span>
+
+                               <input type="hidden" name="get_user_id" value="'.$user->user_id.'" />
+                               <input type="hidden" name="get_user_name" value="'.$user->user_name.'" />
+                               <input type="hidden" name="get_user_phone" value="'.$user->user_phone.'" />
+                               <input type="hidden" name="get_user_email" value="'.$user->user_email.'" />
+                               <input type="hidden" name="get_user_position" value="'.$user->user_position.'" />
+                           </p>
+                     </div>';
+                     if($user->user_position==1 && $count<4){
+                         $output.= '
+                         <div class="text-sm-end">
+                             <button type="submit" id="add_borrowing_books" name="add_borrow" class="btn btn-danger mb-2">
+                                 Mượn Sách
+                             </button>
+                             
+                         </div>
+                         ';
+
+                     }
+                    //  nếu là giáo viên sẽ được mượn  5 cuốn
+                     elseif($user->user_position==2 && $count<6){
+                       $output.= ' 
+                       <div class="text-sm-end">
+                           <button type="submit" id="add_borrowing_books" name="add_borrow" class="btn btn-danger mb-2">
+                               Mượn Sách
+                           </button>
+                           
+                       </div>
+                       ';
+
+                   }else{
+                       $output.= '<div style="text-align: center;background-color: #cccc;
+                               text-transform: initial;" class="p-1">
+                                   <h6 class="text-danger">Với tài khoảng của sinh viên chỉ có thể mượn tối đa 3 cuốn</h6>
+                                   <h6 class="text-danger">Với tài khoảng của cán bộ mượn tối đa 5 cuốn</h6>
+                                   <h5>Vui Lòng chọn lại số lượng sách</h5></div>';      
+                   }
+
+               }
+            }
+            else{
                 
                 $output = '<p class="text-capitalize" style="font-size: 18px;
                                 line-height: 32px;">Tài khoảng chưa đăng ký: 
@@ -168,7 +240,7 @@ class CheckUserController extends Controller
     }
     public function list_users(){
         $this->AuthLogin();
-        $get_users=User::get();
+        $get_users=User::orderBy('user_name','ASC')->get();
         return view('pages.users.list_users')->with('get_users',$get_users);
     }
 
@@ -192,6 +264,13 @@ class CheckUserController extends Controller
         $data['user_phone'] = $request->user_phone;
         $data['user_email'] = $request->user_email;
         $data['user_code'] = $request->user_code;
+        if($request->user_password==""){
+            $password = "123456";
+            $data['user_password'] = md5($password);
+        }else{
+            $data['user_password'] = $request->user_password;
+
+        }
         user::where('user_id',$user_id)->update($data);
         Session::put('message','Cập Nhật thành công');
         return redirect::to('/list-users');

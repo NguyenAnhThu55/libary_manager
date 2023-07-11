@@ -9,7 +9,7 @@
                 <div class="page-title-box">
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item ml-2"><a href="javascript: void(0);">Hyper</a></li>
+                            <li class="breadcrumb-item ml-2"><a href="javascript: void(0);">Thư viện</a></li>
                             <li class="breadcrumb-item mr-4 active">Quản Lý Đơn Vị</li>
                         </ol>
                     </div>
@@ -105,8 +105,8 @@
     
                                         <td>
                                            
-                                            <a href="{{URL::to('/edit-majors/'.$majors->majors_id)}}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
-                                            <a onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?');" href="{{URL::to('/delete-majors/'.$majors->majors_id)}};" class="action-icon"> <i class="mdi mdi-delete"></i></a>
+                                            <a href="{{URL::to('/edit-majors/'.$majors->majors_id)}}" class="action-icon text-primary"> <i class="mdi mdi-square-edit-outline"></i></a>
+                                            <a onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?');" href="{{URL::to('/delete-majors/'.$majors->majors_id)}};" class="action-icon"> <i class="mdi mdi-delete text-danger"></i></a>
                                         </td>
                                     </tr>
                                     

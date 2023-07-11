@@ -21,7 +21,7 @@ class BookCategoryController extends Controller
     }
     public function list_BookCategory(){
         $this->AuthLogin();
-        $list_BookCategory = BookCategory::orderBy('books_category_id','DESC')->get();
+        $list_BookCategory = BookCategory::orderBy('books_category_name','ASC')->get();
         $manager_BookCategory = View('pages.bookCategory.list_bookCategory')->with('list_BookCategory',$list_BookCategory);
         return View('layout')->with('pages.bookCategory.list_bookCategory', $manager_BookCategory);
     }

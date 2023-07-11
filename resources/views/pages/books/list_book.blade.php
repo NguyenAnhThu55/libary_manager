@@ -9,7 +9,7 @@
                 <div class="page-title-box">
                     <div class="page-title-right">
                         <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item ml-2"><a href="javascript: void(0);">Hyper</a></li>
+                            <li class="breadcrumb-item ml-2"><a href="javascript: void(0);">Thư viện</a></li>
                             <li class="breadcrumb-item ">Quản Lý Sách</li>
                             <li class="breadcrumb-item mr-4 active">Thống Kê</li>
                         </ol>
@@ -44,19 +44,41 @@
                                         <i class="mdi mdi-plus-circle me-2"></i>
                                         Thêm Sách
                                     </button>
+
+                                        <style>
+                                            select.select-type-book{
+                                                font-size: 16px;
+                                                margin: 4px;
+                                                padding: 7px;
+                                            }
+                                            .search-books {
+                                                font-size: 16px;
+                                                margin: 4px;
+                                                padding: 4px;
+                                            }
+                                        </style>
+
+                                    <input type="text" id="search_list_input" name="search_list" placeholder="Tìm kiếm..." class="search-books">
+                                    <select name="" id="select_type_books" class="select-type-book">
+                                        <option value="">---Loại Tài liệu---</option>
+                                        @foreach ($type_book as $key => $list_type_book)
+                                            <option id="type_book" value="{{$list_type_book->books_category_id}}">{{$list_type_book->books_category_name}}</option>
+                                            
+                                        @endforeach
+                                    </select>
                                     
 
                                     <!-- Modal -->
                                     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
+                                        <div class="modal-content"style="width:150%">
                                             <div class="modal-header">
                                             <h3 class="modal-title" id="exampleModalLabel">Thêm Sách</h3>
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                             </div>
-                                            <div class="modal-body">
+                                            <div class="modal-body" style="width:90%">
                                                     <form action="{{url('/save-book')}}" method="post" enctype="multipart/form-data">
                                                         @csrf
                                                         <div class="form-group">
@@ -64,11 +86,7 @@
                                                             <input type="text" class="form-control myInput" required name="books_name"  placeholder="vd: giáo trình ngoại ngữ">
                                                             {{-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> --}}
                                                         </div>
-                                                        <div class="form-group">
-                                                            <label class="d-flex">Đặt Đường Dẫn</label>
-                                                            <input type="text" class="form-control myInput" name="books_slug" required  placeholder="vd: giao-trinh-dep">
-                                                            {{-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> --}}
-                                                        </div>
+                                                      
                                                        
                                                         <div class="form-group">
                                                             <label class="d-flex">Thể Loại Sách</label>
@@ -83,18 +101,24 @@
 
                                                         <div class="form-group">
                                                             <label class="d-flex">Tác Giả Sách</label>
-                                                            <select name="author_of_book"  required class="form-select" >
-                                                                <option value="">--Chọn Tác Giả---</option>
-                                                                @foreach ($authors as $key => $authors_of_book)
-                                                                <option value="{{$authors_of_book->authors_id}}">{{$authors_of_book->authors_name}}</option>
-                                                            
-                                                                @endforeach
-                                                            </select>
+                                                            <input type="text" class="form-control myInput" name="author_of_book" required  placeholder="vd: giao-trinh-dep">
+                                                           
                                                         </div>
                                                        
                                                         <div class="form-group">
                                                             <label class="d-flex">Giá Sách</label>
                                                             <input type="number" required class="form-control myInput" name="books_price"  placeholder="10 000">
+                                                            <small id="message" class="form-text text-muted"></small>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="d-flex">Nhà Xuất Bản</label>
+                                                            <input type="text" class="form-control myInput" name="publishing_company"  placeholder="nhập nhà xuất bản">
+                                                            <small id="message" class="form-text text-muted"></small>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="d-flex">Năm Xuất Bản</label>
+                                                            <input type="text"class="form-control myInput" name="publishing_year"  placeholder="nhập năm xuất bản">
                                                             <small id="message" class="form-text text-muted"></small>
                                                         </div>
 
@@ -126,54 +150,33 @@
                                         </div>
                                         </div>
                                     </div>
-                                    {{-- xuất dữ liệu ra file excel  --}}
-                                    <div class="float-right d-flex">
-                                        <form action="{{URL::to('/export-csv')}}" method="POST" enctype="multipart/form-data">
-                                            @csrf
-                                            <button type="submit" name="export_csv"  class="m-1 p-1 bg-primary text-light rounded border border-white" title="Xuất file excel" style="font-size:15px">
-                                                <i class="fas fa-upload mr-1"></i>Xuất file Excel
-                                            </button>
-    
-                                        </form>
-                                        {{-- Nhập dữ liệu --}}
-                                       
-                                           
-                                            <button type="button" class="m-1 p-1 bg-primary text-light rounded border border-white" title="Nhập file excel " style="font-size:15px" data-toggle="modal" data-target="#exampleModal1">
-                                                <i class="fas fa-download mr-1"></i>Nhập file Excel
-                                            </button>
-                                            <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog" role="document">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h3 class="modal-title" id="exampleModalLabel1">Thêm Dữ Liệu</h3>
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <form action="{{url('/import-csv')}}" method="POST" enctype="multipart/form-data">
-                                                                @csrf
-                                                                <div class="form-group">
-                                                                    <label class="d-flex">Nhập file excel </label>
-                                                                    <input type="file" class="form-control myInput" required name="file" accept=".xlsx">
-                                                                </div>
-                                                                <button type="submit" class="btn btn-primary myBtn" name="import_csv" >Thêm</button>
-                                                            </form>
-                                                        </div>
-                                                        
-                                                        
-                                                        
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        
-                                    </div>
+                                   
                                     
                                 </div>
                             </div><!-- end col-->
                         </div>
+                        <form action="{{URL::to('/save-cart-book')}}" method="POST">
+                            @csrf
+                            <div class="" id="search_list">
+                                
+                            </div>
+                        </form>
 
-                        <div class="table-responsive">
+                       {{-- phần tìm theo thể loại --}}
+                        <form action="{{URL::to('/save-cart-book')}}" method="POST">
+                            @csrf
+                            <div class="" id="show_type_books">  
+                                
+                                
+                               
+                            </div>
+                        
+                        </form>    
+                      
+
+                        
+
+                        <div class="table-responsive" id="no_value_type_book">
                             <table id="" class="table table-striped dt-responsive nowrap w-100" data-page-length="5">
                                 <thead class="table-light-borrow">
                                     <tr>
@@ -188,13 +191,16 @@
                                         <th>Hình Ảnh</th>
                                         <th>Mã Sách</th>
                                         <th>Tên Tác Giả</th>
+                                        <th>Năm xuất bản</th>
                                         <th>Số lượng kho</th>
                                       
                                         <th style="width: 155px;">Tùy Chọn</th>
                                     </tr>
                                 </thead>
                             
-                                <tbody>
+                                
+                                <tbody  >
+
                                     
                                     @foreach ($list_books as $key => $list_book)
                                         
@@ -228,7 +234,12 @@
                                                     </td>
 
                                                     <td>
-                                                        <img src="{{('public/image/'.$list_book->books_image)}}" altwidth="40" height="40">
+                                                        @if ($list_book->books_image == null)
+                                                            <img src="{{('public/image/nothumb.jpg')}}" altwidth="40" height="40">
+                                                            @else
+                                                            
+                                                            <img src="{{('public/image/'.$list_book->books_image)}}" altwidth="40" height="40">
+                                                        @endif
                                                     </td>
 
                                                     <td>
@@ -239,6 +250,11 @@
                                                     <td>
                                                         {{$list_book->authors_name}}
                                                     </td>
+
+                                                    <td>
+                                                        {{$list_book->publishing_year}}
+                                                    </td>
+
                                                     {{-- số lượng kho còn --}}
                                                     <td id="borrow_qty">
                                                        @php
@@ -249,9 +265,9 @@
                 
                                                     <td>
 
-                                                        <a href="{{URL::to('/detail-book/'.$list_book->books_slug)}}" class="action-icon"><i class="far fa-eye"></i></a>
-                                                        <a href="{{URL::to('/edit-book/'.$list_book->books_slug)}}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
-                                                        <a onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?');" href="{{URL::to('/delete-book/'.$list_book->books_slug)}}" class="action-icon"> <i class="mdi mdi-delete"></i></a>
+                                                        <a href="{{URL::to('/detail-book/'.$list_book->books_id)}}" class="action-icon text-success"><i class="far fa-eye"></i></a>
+                                                        <a href="{{URL::to('/edit-book/'.$list_book->books_id)}}" class="action-icon text-primary"> <i class="mdi mdi-square-edit-outline"></i></a>
+                                                        <a onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?');" href="{{URL::to('/delete-book/'.$list_book->books_id)}}" class="action-icon"> <i class="mdi mdi-delete text-danger"></i></a>
                                                     </td>
                                                 </tr>
                                                 @else
@@ -272,16 +288,24 @@
                                                        
                                                         {{$list_book->books_name}}
                                                     </td>
-                                                    
                                                     <td>
-                                                        <img src="{{('public/image/'.$list_book->books_image)}}" altwidth="40" height="40">
+                                                        @if ($list_book->books_image == null)
+                                                            <img src="{{('public/image/nothumb.jpg')}}" altwidth="40" height="40">
+                                                            @else
+                                                            
+                                                            <img src="{{('public/image/'.$list_book->books_image)}}" altwidth="40" height="40">
+                                                        @endif
                                                     </td>
+                                                   
                                                     <td>
                                                         {{$list_book->books_code}}
                                                     </td>
 
                                                     <td>
                                                         {{$list_book->authors_name}}
+                                                    </td>
+                                                    <td>
+                                                        {{$list_book->publishing_year}}
                                                     </td>
                                                     {{-- số lượng kho còn --}}
                                                     <td id="borrow_qty">
@@ -296,9 +320,9 @@
                 
                                                     <td>
                                                     
-                                                        <a href="{{URL::to('/detail-book/'.$list_book->books_slug)}}" class="action-icon"><i class="far fa-eye"></i></a>
-                                                        <a href="{{URL::to('/edit-book/'.$list_book->books_slug)}}" class="action-icon"> <i class="mdi mdi-square-edit-outline"></i></a>
-                                                        <a onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?');" href="{{URL::to('/delete-book/'.$list_book->books_slug)}}" class="action-icon"> <i class="mdi mdi-delete"></i></a>
+                                                        <a href="{{URL::to('/detail-book/'.$list_book->books_id)}}" class="action-icon text-success"><i class="far fa-eye"></i></a>
+                                                        <a href="{{URL::to('/edit-book/'.$list_book->books_id)}}" class="action-icon text-primary"> <i class="mdi mdi-square-edit-outline "></i></a>
+                                                        <a onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?');" href="{{URL::to('/delete-book/'.$list_book->books_id)}}" class="action-icon"> <i class="mdi mdi-delete text-danger"></i></a>
                                                     </td>
                                                 </tr>
                                                 @endif
@@ -309,8 +333,10 @@
 
                                 </tbody>
                             </table>
+                            <span style="display: flex;">{{$list_books->render()}}</span>
                         </div>
                     </div> <!-- end card-body-->
+                   
                 </div> <!-- end card-->
             </div> <!-- end col -->
         </div>

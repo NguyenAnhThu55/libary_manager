@@ -39,11 +39,10 @@ class BorrowBooksController extends Controller
         $data['pay_day'] =  $request->pay_day;
         $borrow = BorrowBooks::insertGetId($data);
 
-        //get author
-        $get_author = DB::table('tbl_books')->join('tbl_authors','tbl_authors.authors_id','=','tbl_books.authors_id')->get();
+        // get author
+        $get_author = DB::table('tbl_books')->get();
 
         foreach($get_author as $author){
-            $authors = $author->authors_id;
             $authors_name = $author->authors_name; 
         }
         // get categoty books
@@ -67,7 +66,7 @@ class BorrowBooksController extends Controller
             $data_detail['book_price'] = $v_content->price;
             $data_detail['book_borrow_qty'] = $v_content->qty;
         
-            $data_detail['authors_id'] = $authors;
+            // $data_detail['authors_id'] = $authors;
             $data_detail['authors_name'] = $authors_name;
             // 
 
@@ -96,9 +95,376 @@ class BorrowBooksController extends Controller
         ->select('tbl_borrow_books.*','tbl_users.*')
         ->orderBy('tbl_borrow_books.borrow_books_id','desc')->get();
 
-        //  echo '<pre>';print_r( $manage_borrow_books);'</pre>';
+        //  echo '<pre>';print_r( now());'</pre>';
         return view('pages.borrowBooks.manage_borrow')
         ->with('manage_borrow_books', $manage_borrow_books)->with('borrowing',$borrowing);
+    }
+
+    public function search_manage_borrow(Request $request){
+        $get_value = $request->value_borrow;
+        $manage_borrow_books =DB::table('tbl_borrow_books')
+        ->join('tbl_users','tbl_users.user_id','=','tbl_borrow_books.user_id')
+        ->select('tbl_borrow_books.*','tbl_users.*')
+        ->orderBy('tbl_borrow_books.borrow_books_id','desc')->where('tbl_borrow_books.borrow_books_status','=',$get_value)->get();
+        $output ='';
+        if($get_value==1){
+            // tìm danh sách những người đang mượn
+            $output.='
+                    <table id="basic-datatable" class="table table-striped dt-responsive nowrap w-100" data-page-length="5">
+                    <thead class="table-light-borrow">
+                        <tr>
+                            <th>#</th>
+                            <th>Tên Người Mượn</th>
+                            <th>Ngày Mượn</th>
+                            <th>Ngày trả</th>
+                            <th>Gia Hạn(+7 ngày)</th>
+                            <th>Tình Trạng</th>
+                            <th style="width: 100px;">Tùy Chọn</th>
+                        </tr>
+                    </thead>
+                
+                    <tbody>';
+                   
+                    $i=0;
+                    foreach($manage_borrow_books as $muon){
+                        $i++;
+                        $output.='
+                        <tr>        
+                        <td>
+                              '.$i.'
+                        </td>
+                  
+                        <td>
+                              '.$muon->user_name.'
+                        </td>
+
+                        <td>
+                              '.$muon->created_at.'
+                        </td>
+
+                        <td>
+                              '.$muon->pay_day.'
+                        </td>
+                        <td>
+                              '.$muon->extension.'
+                        </td>';
+                        if ($muon->borrow_books_status==0){
+
+                                    $output.='<td><span class="badge badge-info-lighten" style="font-size: 13px">Đang chờ duyệt</span></td>';
+                        }elseif ($muon->borrow_books_status==1){
+                            $output.='<td><span class="badge bg-danger">Đang Mượn</span></td>';
+
+                              }elseif ($muon->borrow_books_status==2){
+                                     $output.='<td><span class="badge badge-warning-lighten">Đã Gia Hạn</span></td>';
+                              }elseif ($muon->borrow_books_status==3){
+                                $output.='<td><span class="badge badge-success-lighten">Đã Trả</span></td>';
+                              }elseif($muon->borrow_books_status==4){
+                                        $output.='<td><span class="badge badge-info-lighten">Quá Hạn</span></td>';
+                              }elseif ($muon->borrow_books_status==5){
+                                        $output.='<td><span class="badge badge-danger-lighten">Mất Sách</span></td>';
+                              }
+                        
+                   
+                       
+                        $output.='<td>
+                              <a href="'.URL('/view-borrow-detail/'.$muon->borrow_books_id).'" class="action-icon text-success" title="Xem chi tiết"><i class="far fa-eye"></i></a>
+                              <a href="'.URL('/delete-borrow-book/'.$muon->borrow_books_id).'" class="action-icon text-danger" title="Xóa"> <i class="mdi mdi-delete"></i></a>
+                        </td>
+                  </tr>
+                        ';
+                    
+                    }
+                    $output.='</tbody>
+                </table><style>#list_id_borrow{display:none}</style>
+            ';
+        }elseif($get_value==2){
+            //tìm danh sách những người gia hạn
+            $output.='
+            <table id="basic-datatable" class="table table-striped dt-responsive nowrap w-100" data-page-length="5">
+            <thead class="table-light-borrow">
+                <tr>
+                    <th>#</th>
+                    <th>Tên Người Mượn</th>
+                    <th>Ngày Mượn</th>
+                    <th>Ngày trả</th>
+                    <th>Gia Hạn(+7 ngày)</th>
+                    <th>Tình Trạng</th>
+                    <th style="width: 100px;">Tùy Chọn</th>
+                </tr>
+            </thead>
+        
+            <tbody>';
+           
+            $i=0;
+            foreach($manage_borrow_books as $giahan){
+                $i++;
+                $output.='
+                <tr>        
+                <td>
+                      '.$i.'
+                </td>
+          
+                <td>
+                      '.$giahan->user_name.'
+                </td>
+
+                <td>
+                      '.$giahan->created_at.'
+                </td>
+
+                <td>
+                      '.$giahan->pay_day.'
+                </td>
+                <td>
+                      '.$giahan->extension.'
+                </td>';
+                if ($giahan->borrow_books_status==0){
+
+                            $output.='<td><span class="badge badge-info-lighten" style="font-size: 13px">Đang chờ duyệt</span></td>';
+                }elseif ($giahan->borrow_books_status==1){
+                    $output.='<td><span class="badge bg-danger">Đang Mượn</span></td>';
+
+                      }elseif ($giahan->borrow_books_status==2){
+                             $output.='<td><span class="badge badge-warning-lighten">Đã Gia Hạn</span></td>';
+                      }elseif ($giahan->borrow_books_status==3){
+                        $output.='<td><span class="badge badge-success-lighten">Đã Trả</span></td>';
+                      }elseif($giahan->borrow_books_status==4){
+                                $output.='<td><span class="badge badge-info-lighten">Quá Hạn</span></td>';
+                      }elseif ($giahan->borrow_books_status==5){
+                                $output.='<td><span class="badge badge-danger-lighten">Mất Sách</span></td>';
+                      }
+                
+           
+               
+                $output.='<td>
+                      <a href="'.URL('/view-borrow-detail/'.$giahan->borrow_books_id).'" class="action-icon text-success" title="Xem chi tiết"><i class="far fa-eye"></i></a>
+                      <a href="'.URL('/delete-borrow-book/'.$giahan->borrow_books_id).'" class="action-icon text-danger" title="Xóa"> <i class="mdi mdi-delete"></i></a>
+                </td>
+          </tr>
+                ';
+            
+            }
+            $output.='</tbody>
+        </table><style>#list_id_borrow{display:none}</style>
+    ';
+           
+        }elseif($get_value==3){
+            //tìm danh sách những người trả
+            $output.='
+            <table id="basic-datatable" class="table table-striped dt-responsive nowrap w-100" data-page-length="5">
+            <thead class="table-light-borrow">
+                <tr>
+                    <th>#</th>
+                    <th>Tên Người Mượn</th>
+                    <th>Ngày Mượn</th>
+                    <th>Ngày trả</th>
+                    <th>Gia Hạn(+7 ngày)</th>
+                    <th>Tình Trạng</th>
+                    <th style="width: 100px;">Tùy Chọn</th>
+                </tr>
+            </thead>
+        
+            <tbody>';
+           
+            $i=0;
+            foreach($manage_borrow_books as $tra){
+                $i++;
+                $output.='
+                <tr>        
+                <td>
+                      '.$i.'
+                </td>
+          
+                <td>
+                      '.$tra->user_name.'
+                </td>
+
+                <td>
+                      '.$tra->created_at.'
+                </td>
+
+                <td>
+                      '.$tra->pay_day.'
+                </td>
+                <td>
+                      '.$tra->extension.'
+                </td>';
+                if ($tra->borrow_books_status==0){
+
+                            $output.='<td><span class="badge badge-info-lighten" style="font-size: 13px">Đang chờ duyệt</span></td>';
+                }elseif ($tra->borrow_books_status==1){
+                    $output.='<td><span class="badge bg-danger">Đang Mượn</span></td>';
+
+                      }elseif ($tra->borrow_books_status==2){
+                             $output.='<td><span class="badge badge-warning-lighten">Đã Gia Hạn</span></td>';
+                      }elseif ($tra->borrow_books_status==3){
+                        $output.='<td><span class="badge badge-success-lighten">Đã Trả</span></td>';
+                      }elseif($tra->borrow_books_status==4){
+                                $output.='<td><span class="badge badge-info-lighten">Quá Hạn</span></td>';
+                      }elseif ($tra->borrow_books_status==5){
+                                $output.='<td><span class="badge badge-danger-lighten">Mất Sách</span></td>';
+                      }
+                
+           
+               
+                $output.='<td>
+                      <a href="'.URL('/view-borrow-detail/'.$tra->borrow_books_id).'" class="action-icon text-success" title="Xem chi tiết"><i class="far fa-eye"></i></a>
+                      <a href="'.URL('/delete-borrow-book/'.$tra->borrow_books_id).'" class="action-icon text-danger" title="Xóa"> <i class="mdi mdi-delete"></i></a>
+                </td>
+          </tr>
+                ';
+            
+            }
+            $output.='</tbody>
+        </table><style>#list_id_borrow{display:none}</style>
+    ';
+        }elseif($get_value==4){
+            //tìm danh sách những người quá hạn
+            $output.='
+            <table id="basic-datatable" class="table table-striped dt-responsive nowrap w-100" data-page-length="5">
+            <thead class="table-light-borrow">
+                <tr>
+                    <th>#</th>
+                    <th>Tên Người Mượn</th>
+                    <th>Ngày Mượn</th>
+                    <th>Ngày trả</th>
+                    <th>Gia Hạn(+7 ngày)</th>
+                    <th>Tình Trạng</th>
+                    <th style="width: 100px;">Tùy Chọn</th>
+                </tr>
+            </thead>
+        
+            <tbody>';
+           
+            $i=0;
+            foreach($manage_borrow_books as $quahan){
+                $i++;
+                $output.='
+                <tr>        
+                <td>
+                      '.$i.'
+                </td>
+          
+                <td>
+                      '.$quahan->user_name.'
+                </td>
+
+                <td>
+                      '.$quahan->created_at.'
+                </td>
+
+                <td>
+                      '.$quahan->pay_day.'
+                </td>
+                <td>
+                      '.$quahan->extension.'
+                </td>';
+                if ($quahan->borrow_books_status==0){
+
+                            $output.='<td><span class="badge badge-info-lighten" style="font-size: 13px">Đang chờ duyệt</span></td>';
+                }elseif ($quahan->borrow_books_status==1){
+                    $output.='<td><span class="badge bg-danger">Đang Mượn</span></td>';
+
+                      }elseif ($quahan->borrow_books_status==2){
+                             $output.='<td><span class="badge badge-warning-lighten">Đã Gia Hạn</span></td>';
+                      }elseif ($quahan->borrow_books_status==3){
+                        $output.='<td><span class="badge badge-success-lighten">Đã Trả</span></td>';
+                      }elseif($quahan->borrow_books_status==4){
+                                $output.='<td><span class="badge badge-info-lighten">Quá Hạn</span></td>';
+                      }elseif ($quahan->borrow_books_status==5){
+                                $output.='<td><span class="badge badge-danger-lighten">Mất Sách</span></td>';
+                      }
+                
+           
+               
+                $output.='<td>
+                      <a href="'.URL('/view-borrow-detail/'.$quahan->borrow_books_id).'" class="action-icon text-success" title="Xem chi tiết"><i class="far fa-eye"></i></a>
+                      <a href="'.URL('/delete-borrow-book/'.$quahan->borrow_books_id).'" class="action-icon text-danger" title="Xóa"> <i class="mdi mdi-delete"></i></a>
+                </td>
+          </tr>
+                ';
+            
+            }
+            $output.='</tbody>
+        </table><style>#list_id_borrow{display:none}</style>
+    ';
+        }elseif($get_value==5){
+            //tìm danh sách những người  mất sách
+            $output.='
+            <table id="basic-datatable" class="table table-striped dt-responsive nowrap w-100" data-page-length="5">
+            <thead class="table-light-borrow">
+                <tr>
+                    <th>#</th>
+                    <th>Tên Người Mượn</th>
+                    <th>Ngày Mượn</th>
+                    <th>Ngày trả</th>
+                    <th>Gia Hạn(+7 ngày)</th>
+                    <th>Tình Trạng</th>
+                    <th style="width: 100px;">Tùy Chọn</th>
+                </tr>
+            </thead>
+        
+            <tbody>';
+           
+            $i=0;
+            foreach($manage_borrow_books as $mat){
+                $i++;
+                $output.='
+                <tr>        
+                <td>
+                      '.$i.'
+                </td>
+          
+                <td>
+                      '.$mat->user_name.'
+                </td>
+
+                <td>
+                      '.$mat->created_at.'
+                </td>
+
+                <td>
+                      '.$mat->pay_day.'
+                </td>
+                <td>
+                      '.$mat->extension.'
+                </td>';
+                if ($mat->borrow_books_status==0){
+
+                            $output.='<td><span class="badge badge-info-lighten" style="font-size: 13px">Đang chờ duyệt</span></td>';
+                }elseif ($mat->borrow_books_status==1){
+                    $output.='<td><span class="badge bg-danger">Đang Mượn</span></td>';
+
+                      }elseif ($mat->borrow_books_status==2){
+                             $output.='<td><span class="badge badge-warning-lighten">Đã Gia Hạn</span></td>';
+                      }elseif ($mat->borrow_books_status==3){
+                        $output.='<td><span class="badge badge-success-lighten">Đã Trả</span></td>';
+                      }elseif($mat->borrow_books_status==4){
+                                $output.='<td><span class="badge badge-info-lighten">Quá Hạn</span></td>';
+                      }elseif ($mat->borrow_books_status==5){
+                                $output.='<td><span class="badge badge-danger-lighten">Mất Sách</span></td>';
+                      }
+                
+           
+               
+                $output.='<td>
+                      <a href="'.URL('/view-borrow-detail/'.$mat->borrow_books_id).'" class="action-icon text-success" title="Xem chi tiết"><i class="far fa-eye"></i></a>
+                      <a href="'.URL('/delete-borrow-book/'.$mat->borrow_books_id).'" class="action-icon text-danger" title="Xóa"> <i class="mdi mdi-delete"></i></a>
+                </td>
+          </tr>
+                ';
+            
+            }
+            $output.='</tbody>
+        </table><style>#list_id_borrow{display:none}</style>
+    ';
+        }
+        if($output==" "){
+            echo "chưa có dữ liệu";
+        }else{
+            echo   $output;
+
+        }
     }
 
     public function view_borrow_detail($borrow_books_id){
@@ -140,13 +506,17 @@ class BorrowBooksController extends Controller
         $data = $request->all();
         $books_borrow =BorrowBooks::find($data['order_id']);
         $books_borrow->borrow_books_status = $data['order_status'];
+        $out ="";
         if($books_borrow->borrow_books_status==3){
             // update ngày trả là ngày giời hiện tại khi đang thực hiện update
             $books_borrow->pay_day = Carbon::now()->format('Y-m-d H:i:s');
         }elseif($books_borrow->borrow_books_status==2){
             // neu gia hạn người dùng sẽ được gia hạn thêm 7 ngày
             $books_borrow->extension = Carbon::now()->add(7,'day')->format('Y-m-d H:i:s');
+       
         }
+
+
         $books_borrow->save();
         // lấy ra book_status và update status
         if($books_borrow->borrow_books_status == 1){
@@ -193,7 +563,7 @@ class BorrowBooksController extends Controller
                 'pay_day'=>$books_borrow['pay_day'],
             );
            
-            $title_mail = "Xác Nhận Mượn Sách";
+            $title_mail = "No-reply";
             Mail::send('pages.mail.borrowbook_email',['cart_array'=>$cart_array,'user_array'=>$user_array,'borrow_pay'=>$borrow_pay],function($message) use($title_mail,$data){
                 $message->to($data['email'])->subject($title_mail);
                 $message->from($data['email'],$title_mail);
@@ -215,6 +585,7 @@ class BorrowBooksController extends Controller
 				}
 			}
 		}
+       
     }
 
     // hàm trả sách
@@ -232,4 +603,6 @@ class BorrowBooksController extends Controller
         Session::put('message','Xóa sách thành công');
         return redirect::to('give-book-back');
     }
+
+   
 }

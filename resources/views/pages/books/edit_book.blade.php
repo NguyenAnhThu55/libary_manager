@@ -7,7 +7,7 @@
                 <h2 class="">Cập Nhật Sách</h2>
                 @foreach ($edit_book as $key => $val)
                 
-                <form action="{{url('/update-book/'.$val->books_slug)}}" method="post">
+                <form action="{{url('/update-book/'.$val->books_id)}}" method="post" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group">
                         <label class="d-flex">Nhập Tên sách</label>
@@ -15,8 +15,6 @@
                         {{-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> --}}
                     </div>
                     <div class="form-group">
-                        <label class="d-flex">Đặt Đường Dẫn</label>
-                        <input type="text" class="form-control" name="books_slug" value="{{$val->books_slug}}">
                         <input type="hidden" class="form-control" name="books_code" value="{{$val->books_code}}">
                         {{-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> --}}
                     </div>
@@ -39,19 +37,8 @@
 
                     <div class="form-group">
                         <label class="d-flex">Tác Giả Sách</label>
-                        <select name="author_of_book" class="form-select" >
-                           
-
-                            @foreach ($authors as $key => $authors_of_book)
-                            @if ($authors_of_book->authors_id == $val->authors_id)
-                                <option selected value="{{$authors_of_book->authors_id}}">{{$authors_of_book->authors_name}}</option>
-                            @else  
-                                <option value="{{$authors_of_book->authors_id}}">{{$authors_of_book->authors_name}}</option>
-
-                            @endif   
-                           @endforeach
-
-                        </select>
+                        <input type="text" class="form-control myInput" name="author_of_book" value="{{$val->authors_name}}">
+                       
                     </div>
                 
                     <div class="form-group">
@@ -59,7 +46,17 @@
                         <input type="number" class="form-control" name="books_price" value="{{$val->books_price}}">
                         {{-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> --}}
                     </div>
+                    <div class="form-group">
+                        <label class="d-flex">Nhà Xuất Bản</label>
+                        <input type="text" class="form-control myInput" name="publishing_company"  value="{{$val->publishing_company}}">
+                        <small id="message" class="form-text text-muted"></small>
+                    </div>
 
+                    <div class="form-group">
+                        <label class="d-flex">Năm Xuất Bản</label>
+                        <input type="text"class="form-control myInput" name="publishing_year"  value="{{$val->publishing_year}}">
+                        <small id="message" class="form-text text-muted"></small>
+                    </div>
                     <div class="form-group">
                         <label class="d-flex">Số lượng kho</label>
                         <input type="number" class="form-control" name="books_quantity" value="{{$val->books_quantity}}">
@@ -69,7 +66,13 @@
                     <div class="form-group">
                         <label class="d-flex">Hình Ảnh</label>
                         <input type="file" class="form-control" name="books_image" >
+                        @if ($val->books_image==null)
+
+                            
+                        <img src="{{ URL::to('public/image/nothumb.jpg')}}" alt="" srcset="" class="mt-1" height="40" width="40" />
+                        @else
                         <img src="{{ URL::to('public/image/'.$val->books_image)}}" alt="" srcset="" class="mt-1" height="40" width="40" />
+                        @endif
                     </div>
 
                     <div class="form-group">

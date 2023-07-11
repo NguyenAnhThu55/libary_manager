@@ -9,8 +9,11 @@ use Illuminate\Http\Request;
 use App\Models\Authors; 
 use App\Models\BookCategory; 
 use App\Models\Books;
+use App\Models\User;
 use App\Models\Admin;
+use App\Models\Role;
 use App\Models\BorrowBooks_Detail;
+use App\Models\BorrowBooks;
 use Illuminate\Support\Facades\Redirect;
 
 class HomeController extends Controller
@@ -28,7 +31,13 @@ class HomeController extends Controller
     }
     public function index(){
         $this->AuthLogin();
-        return view('pages.home');
+        //total
+        $books = Books::all()->sum('books_quantity');
+        $total_admin = Admin::all()->count();
+        $borrow = BorrowBooks::where('borrow_books_status','=','1')->count();
+        $user = User::all()->count();
+        $violations = BorrowBooks::orwhere('borrow_books_status','=','4')->orwhere('borrow_books_status','=','5')->count();
+        return view('pages.home')->with(compact('books','violations','borrow','user','total_admin'));
     }
 
     public function admin_login(Request $request){
@@ -64,4 +73,60 @@ class HomeController extends Controller
         ->with('bookCategory',$bookCategory)
         ->with('search_book',$search_book);
     }
+
+    public function view_profile(){
+        $admin_id = Session::get('admin_id');
+
+
+        $get_profile = DB::table('tbl_admin')->where('admin_id','=',$admin_id)
+        ->join('admin_role','tbl_admin.admin_id','=','admin_role.admin_admin_id')
+        ->join('tbl_roles','admin_role.role_id_roles', '=','tbl_roles.id_roles')
+        ->get();
+        // ->get();
+        return view('pages.profile.view_profile')->with('get_profile',$get_profile);
+    }
+
+    public function edit_profile($profiles_id){
+        $this->AuthLogin();
+
+        $edit_profile = Admin::where('admin_id',$profiles_id)
+        ->join('admin_role','tbl_admin.admin_id','=','admin_role.admin_admin_id')
+        ->join('tbl_roles','admin_role.role_id_roles', '=','tbl_roles.id_roles')->get();
+        $manager_profile = view('pages.profile.edit_profile')
+            ->with('edit_profile', $edit_profile);
+        return view('layout')->with('pages.profile.edit_profile', $manager_profile);
+      
+    }
+    public function update_profile(Request $request, $profiles_id)
+    {
+        $this->AuthLogin();
+       
+        $data = array();
+        $data['admin_name'] = $request->admin_name;
+        $data['admin_email'] = $request->admin_email;
+        $data['admin_phone'] = $request->admin_phone;
+       
+        $get_image = $request->file('admin_image');
+      
+        if ($get_image) {
+            $get_name_image = $get_image->getClientOriginalName();
+            // hàm cắt đuôi .jpg
+            $name_image = current(explode('.', $get_name_image));
+            $new_image = $name_image . rand(0, 99) . '.' . $get_image->getClientOriginalExtension();
+            $get_image->move(public_path('image'), $new_image);
+            $data['admin_image'] = $new_image;
+
+            // echo '<pre>'; print_r($data); '</pre>';
+           Admin::where('admin_id', $profiles_id)->update($data);
+            Session::put('message', 'Cập nhật Sách thành công');
+            return redirect::to('/view-profile');
+        }
+
+        Admin::where('admin_id', $profiles_id)->update($data);
+            Session::put('message', 'Cập nhật Sách thành công');
+            return redirect::to('/view-profile');
+        // echo '<pre>'; print_r($data); '</pre>';
+    }
+
+
 }
